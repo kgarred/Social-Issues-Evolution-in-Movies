@@ -16,6 +16,7 @@ from bs4 import BeautifulSoup
 import pandas as pd
 import zlib
 import re
+import html
 from db import open_sqlite, create_page_dump, does_dump_table_exist, url_exists, insert_page
 import urllib.request as Request
 from urllib.parse import urlparse
@@ -68,6 +69,16 @@ def is_page_content_valid(url, content):
     """ TODO: detect scraper failure here, e.g. error message in HTML """
     if len(content) == 0: return False
     if len(content) < 10000: return False
+    
+    # Detect for error message in HTML content for location and critic review pages with no valid data
+    '''
+    nolocationtext = "It looks like we don't have any filming & production for this title yet."
+    nocriticreviewtext = "It looks like we don't have any metacritic reviews for this title yet."
+
+    refine_content = html.unescape(content)
+    if (nolocationtext in refine_content) or (nocriticreviewtext in refine_content):
+        return False 
+    '''
     if "keywords" in url:  
         kw = ["plot keywords", "Contribute to this page",'More from this title','first to contribute']
         for w in kw:
@@ -81,12 +92,18 @@ class FilmSpider(scrapy.Spider):
     name = 'myspider'
     custom_settings = {
         'DOWNLOAD_DELAY': 1.0,  # seconds, You can adjust download delay if needed
-        'RANDOMIZE_DOWNLOAD_DELAY': True
+        'RANDOMIZE_DOWNLOAD_DELAY': True,
+        'RETRY_TIMES': 3,
+        'RETRY_HTTP_CODES': [429, 500, 502, 503, 504],    # default error codes
+        'DOWNLOADER_MIDDLEWARES' : {
+            "scrapy.downloadermiddlewares.retry.RetryMiddleware": None,
+            'middleware.CustomRetryMiddleware': 550
+        }
     }
 
     def start_requests(self):
         global _page_counter
-        input_file_films = os.path.join(os.path.dirname(__name__), "films_to_scrape_sample.csv")
+        input_file_films = os.path.join(os.path.dirname(__name__), "data/films_to_scrape_sample1.csv")
         with open(input_file_films, 'r') as file:
             logger.info(">>> Reading file + "+input_file_films)
             reader = csv.reader(file)
@@ -109,7 +126,7 @@ class FilmSpider(scrapy.Spider):
                     get_curated_reviews_url(row[1]), get_curated_reviews_url(row[1]),
                     get_awards_url(row[1])]                                                  
                 # scrape urls
-                for url in self.urls:
+                for url in urls:
                     if url_exists(_db, url):
                         #print("URL exists, skipping")
                         continue
@@ -121,6 +138,7 @@ class FilmSpider(scrapy.Spider):
         page_sz = len(response.text)
         logger.debug('   page sz=' + str(page_sz))
         if not is_page_content_valid(response.url, response.text):
+            logger.debug('Page content not valid '+response.url)
             raise CloseSpider('error for url, stopping scraper: '+response.url)
         insert_page(_db, response.url, None, response.text, len(response.text))
 
@@ -177,7 +195,7 @@ def get_critic_reviews_url(film_id):
 # FILE: title.basics.tsv.gz
 # tconst	titleType	primaryTitle	originalTitle	isAdult	startYear	endYear	runtimeMinutes	genres
 
-_db = open_sqlite(os.path.join(os.path.dirname(__name__), "films.db"))
+_db = open_sqlite(os.path.join(os.path.dirname(__name__), "data/films.db"))
 if not does_dump_table_exist(_db):
     create_page_dump(_db)
 
