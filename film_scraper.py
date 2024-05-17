@@ -66,11 +66,13 @@ def get_random_user_agent():
     return random.choice(agents)
 
 def is_page_content_valid(url, content):
-    """ TODO: detect scraper failure here, e.g. error message in HTML """
+    """ TODO: detect scraper failure here, e.g. error message in HTML - Done"""
     if len(content) == 0: return False
     if len(content) < 10000: return False
     
-    # Detect for error message in HTML content for location and critic review pages with no valid data
+    # Below commented code is to detect for error message in HTML content 
+    # especially, for location and critic review pages with no valid data.
+    # Below check per link adds around 3 seconds, which is not feasible.
     '''
     nolocationtext = "It looks like we don't have any filming & production for this title yet."
     nocriticreviewtext = "It looks like we don't have any metacritic reviews for this title yet."
@@ -103,7 +105,7 @@ class FilmSpider(scrapy.Spider):
 
     def start_requests(self):
         global _page_counter
-        input_file_films = os.path.join(os.path.dirname(__name__), "data/films_to_scrape_sample1.csv")
+        input_file_films = os.path.join(os.path.dirname(__name__), "data/films_to_scrape.csv")
         with open(input_file_films, 'r') as file:
             logger.info(">>> Reading file + "+input_file_films)
             reader = csv.reader(file)
@@ -147,11 +149,12 @@ class FilmSpider(scrapy.Spider):
         # Log the error
         self.logger.error(repr(failure))
         raise CloseSpider('fatal error for url, stopping scraper: '+failure.request.url)
-        # You can optionally handle retries or other actions here
-        # For example, retry the failed request:
-        # url = failure.request.url
-        # yield scrapy.Request(url=url, callback=self.parse, errback=self.error_handler)
-
+               
+        # To handle retries for specific codes mentioned in settings,
+        # CustomMiddleware classis used. It file overrides retrymiddleware and
+        # send retry requests in exponential manner.
+        # For any other errors, code will stop and spider will close.
+    
 def get_base_url(film_id):
     assert film_id
     return f"https://www.imdb.com/title/{film_id}/?ref_=ttfc_fc_tt"
