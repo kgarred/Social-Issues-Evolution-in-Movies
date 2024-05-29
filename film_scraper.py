@@ -106,6 +106,7 @@ class FilmSpider(scrapy.Spider):
     def start_requests(self):
         global _page_counter
         input_file_films = os.path.join(os.path.dirname(__name__), "data/films_to_scrape.csv")
+        self.seen_404 = False
         with open(input_file_films, 'r') as file:
             logger.info(">>> Reading file + "+input_file_films)
             reader = csv.reader(file)
@@ -117,8 +118,6 @@ class FilmSpider(scrapy.Spider):
                 if _page_counter % 500 == 0:
                     print("\tpage counter = ",_page_counter)
 
-                # store film_id
-                self.film_id = row[1]
                 
                 # get URLs for a film
                 urls = [get_base_url(row[1]),
@@ -137,18 +136,25 @@ class FilmSpider(scrapy.Spider):
                                          callback=self.parse, errback=self.error_handler)
                     
     def parse(self, response):
+        if self.seen_404 == True:
+            self.seen_404 = False
+            
         page_sz = len(response.text)
         logger.debug('   page sz=' + str(page_sz))
         if not is_page_content_valid(response.url, response.text):
             logger.debug('Page content not valid '+response.url)
-            raise CloseSpider('error for url, stopping scraper: '+response.url)
-        insert_page(_db, response.url, None, response.text, len(response.text))
-
-
+            #raise CloseSpider('error for url, stopping scraper: '+response.url)
+        else:
+            insert_page(_db, response.url, None, response.text, len(response.text))
+ 
     def error_handler(self, failure):
         # Log the error
-        self.logger.error(repr(failure))
-        raise CloseSpider('fatal error for url, stopping scraper: '+failure.request.url)
+        if failure.value.response.status == 404:
+            logger.debug('404 error response received for '+ failure.request.url)
+            self.seen_404 = True
+        else:
+            self.logger.error(repr(failure))
+            raise CloseSpider('fatal error for url, stopping scraper: '+failure.request.url)
                
         # To handle retries for specific codes mentioned in settings,
         # CustomMiddleware classis used. It file overrides retrymiddleware and
