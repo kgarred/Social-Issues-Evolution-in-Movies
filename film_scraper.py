@@ -105,7 +105,7 @@ class FilmSpider(scrapy.Spider):
 
     def start_requests(self):
         global _page_counter
-        input_file_films = os.path.join(os.path.dirname(__name__), "data/films_to_scrape.csv")
+        input_file_films = os.path.join(os.path.dirname(__name__), "data/next_films_to_scrape.csv")
         self.seen_404 = False
         with open(input_file_films, 'r') as file:
             logger.info(">>> Reading file + "+input_file_films)
@@ -204,7 +204,7 @@ def get_critic_reviews_url(film_id):
 # FILE: title.basics.tsv.gz
 # tconst	titleType	primaryTitle	originalTitle	isAdult	startYear	endYear	runtimeMinutes	genres
 
-_db = open_sqlite(os.path.join(os.path.dirname(__name__), "data/films.db"))
+_db = open_sqlite(os.path.join(os.path.dirname(__name__), "data/next_films.db"))
 if not does_dump_table_exist(_db):
     create_page_dump(_db)
 
