@@ -1,4 +1,4 @@
-# IMDB_scraper
+# Social-Issues-Evolution-in-Movies
 IMDB_scraper will genrate a database containing page dumps for all the URL links mentioned in film_scraper.py file.
 It will create the films.db file which can be further used for scraping using SQLITE and beautifulsoup.
 It consists of 4 files mentioned below:
