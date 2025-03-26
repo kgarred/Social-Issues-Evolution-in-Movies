@@ -37,8 +37,10 @@ $ python3 film_scraper.py
 Step-4: Keep checking the terminal. If script is stopped due to any failure, restart the script. It will resume further.
 As the list contains million of films, it will take approximately two weeks time. Be patient :)
 
-Result: films.db file under folder data/
+Result: films.db file under folder Database/
 
 ## post-processing
 Step-5: Once film_scraper.py is finished. Execute film_postprocess file to extract csv/tsv files from page dumps in films.db
 execute film_postprocess.ipynb in jupyter.
+
+Result: extracted .csv/.tsv files will be available under folder ../data/
