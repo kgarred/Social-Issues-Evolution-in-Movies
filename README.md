@@ -1,46 +1,128 @@
-# IMDB_scraper
-IMDB_scraper will genrate a database containing page dumps for all the URL links mentioned in film_scraper.py file.
-It will create the films.db file which can be further used for scraping using SQLITE and beautifulsoup.
-It consists of 4 files mentioned below:
+# Social Issues Evolution in Movies
 
-db.py:
-This file contains code for db management.
+This project explores the evolution of social issues in movies over time, using data from IMDb. It involves data collection, preprocessing, feature extraction, supervised machine learning, and geo-spatial/temporal analysis to classify movies into predefined social issue categories.
 
-film_scraper.py:
-This file contains code for reading and dumping imdb links into the database (films.db)
+---
 
-film_preprocess.ipynb:
-This file process creates the csv file (films_to_scrape.csv) containing list of films to scrape from web filtered by numofvotes in decreasing order.
+### Directory Structure
 
-film_postprocess.ipynb:
-This file is executed after film_scraper.py is finished and films.db is completed.	
-It contains code to scrape the dump pages for the required information and create relevant CSV/TSV files like, keywords, locations etc.
+```
+e:\Dissertation\Social-Issues-Evolution-in-Movies
+│
+├── data/                     # Contains datasets, raw and processed data
+├── notebooks/                # Jupyter notebooks for exploration and modeling
+├── src/                      # Source code for data collection, preprocessing, and analysis
+├── reports/                  # Reports and documentation
+├── tests/                    # Unit tests for the source code
+├── references/               # Research papers and related references
+├── README.md                 # Project overview and instructions
+├── requirements.txt          # Python dependencies
+└── .gitignore                # Git ignore file
+```
 
-# Steps to follow:
-## pre-processing
-Step-1: execute film_preprocess.ipynb file in jupyter
-Result: films_to_scrape.csv file created under folder data/
+---
 
-## Requirements
-Step-2: Open anaconda command prompt and execute below requirements.
-Requirements (Anaconda):
-$ conda install pandas scrapy beautifulsoup4
-or (Other)
-$ pip install pandas scrapy beautifulsoup4
+### Methodology
 
-## Run scraper
-Step-3: execute film_scraper python script
-(in conda or other env)
-$ python3 film_scraper.py
+The workflow process consists of the following steps:
 
-## Monitoring
-Step-4: Keep checking the terminal. If script is stopped due to any failure, restart the script. It will resume further.
-As the list contains million of films, it will take approximately two weeks time. Be patient :)
+#### Step 1: Data Collection
+- **Description**: Data was scraped and stored from IMDb webpages.
+- **Data Size**: 100,000 movies.
+- **Code Location**: `src/imdb_scraper/`
 
-Result: films.db file under folder Database/
+#### Step 2: Data Preprocessing
+- **Description**: Data cleaning, defining social issue labels, and manual labeling using the RAG system with Llama3 and LangChain.
+- **Code Location**: `src/preprocessing/`
 
-## post-processing
-Step-5: Once film_scraper.py is finished. Execute film_postprocess file to extract csv/tsv files from page dumps in films.db
-execute film_postprocess.ipynb in jupyter.
+#### Step 3: Feature Creation
+- **Description**: Extracted features using sentence transformer embeddings and sentiment scores from movie summaries.
+- **Code Location**: `src/analysis/`
 
-Result: extracted .csv/.tsv files will be available under folder ../data/
+#### Step 4: Model Development
+- **Description**: Developed a supervised machine learning model (SVM) to classify movies into 13 categories using summary embeddings and sentiment scores as input features.
+- **Code Location**: `notebooks/modeling/`
+
+#### Step 5: Classification
+- **Description**: Classified unlabelled movies with predefined social issue labels using the trained SVM model.
+- **Code Location**: `src/analysis/`
+
+#### Step 6: Model Evaluation
+- **Description**: Evaluated the model's performance on the testing set using metrics like balanced accuracy, macro precision, recall, F1-score, and ROC-AUC curve.
+- **Results**: Achieved a mean accuracy of **72% ± 0.02**.
+- **Code Location**: `notebooks/modeling/`
+
+#### Step 7: Geo-Spatial and Temporal Analysis
+- **Description**: Analyzed time and space-related patterns across movies.
+- **Code Location**: `src/visualization/`
+
+---
+
+### Visualizations
+
+The project includes various visualizations to:
+- Highlight how certain social issues gained focus over time.
+- Reveal opportunities in genres where social issues could be more diversified.
+
+**Code Location**: `src/visualization/`
+
+---
+
+### Installation
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/your-repo/Social-Issues-Evolution-in-Movies.git
+   ```
+2. Navigate to the project directory:
+   ```bash
+   cd Social-Issues-Evolution-in-Movies
+   ```
+3. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+---
+
+### Usage
+
+1. **Data Collection**: Run the IMDb scraper to collect data:
+   ```bash
+   python src/imdb_scraper/
+   ```
+2. **Preprocessing**: Clean and preprocess the data:
+   ```bash
+   python src/data_preprocessing.ipynb
+   ```
+3. **Feature Extraction**: Generate embeddings and sentiment scores:
+   ```bash
+   python src/Create_Features.ipynb
+   ```
+4. **Model Training**: Train the SVM model:
+   ```bash
+   jupyter src/SVM_classification.ipynb
+   ```
+5. **Visualization**: Generate visualizations:
+   ```bash
+   python reports/
+   ```
+
+---
+
+### References
+
+- IMDb Dataset
+- Research papers and articles on social issues in movies.
+
+---
+
+### Contributions
+
+Feel free to contribute by submitting issues or pull requests. For major changes, please open an issue first to discuss what you would like to change.
+
+---
+
+### License
+
+This project is licensed under the MIT License. See `LICENSE` for details.
