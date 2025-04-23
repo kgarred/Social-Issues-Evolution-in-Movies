@@ -10,11 +10,8 @@ This project explores the evolution of social issues in movies over time, using 
 e:\Dissertation\Social-Issues-Evolution-in-Movies
 │
 ├── data/                     # Contains datasets, raw and processed data
-├── notebooks/                # Jupyter notebooks for exploration and modeling
-├── src/                      # Source code for data collection, preprocessing, and analysis
+├── src/                      # Source code for data collection, preprocessing, analysis and modelling
 ├── reports/                  # Reports and documentation
-├── tests/                    # Unit tests for the source code
-├── references/               # Research papers and related references
 ├── README.md                 # Project overview and instructions
 ├── requirements.txt          # Python dependencies
 └── .gitignore                # Git ignore file
@@ -33,28 +30,28 @@ The workflow process consists of the following steps:
 
 #### Step 2: Data Preprocessing
 - **Description**: Data cleaning, defining social issue labels, and manual labeling using the RAG system with Llama3 and LangChain.
-- **Code Location**: `src/preprocessing/`
+- **Code Location**: `src/`
 
 #### Step 3: Feature Creation
 - **Description**: Extracted features using sentence transformer embeddings and sentiment scores from movie summaries.
-- **Code Location**: `src/analysis/`
+- **Code Location**: `src/`
 
 #### Step 4: Model Development
 - **Description**: Developed a supervised machine learning model (SVM) to classify movies into 13 categories using summary embeddings and sentiment scores as input features.
-- **Code Location**: `notebooks/modeling/`
+- **Code Location**: `src/`
 
 #### Step 5: Classification
 - **Description**: Classified unlabelled movies with predefined social issue labels using the trained SVM model.
-- **Code Location**: `src/analysis/`
+- **Code Location**: `src/`
 
 #### Step 6: Model Evaluation
 - **Description**: Evaluated the model's performance on the testing set using metrics like balanced accuracy, macro precision, recall, F1-score, and ROC-AUC curve.
 - **Results**: Achieved a mean accuracy of **72% ± 0.02**.
-- **Code Location**: `notebooks/modeling/`
+- **Code Location**: `src/`
 
 #### Step 7: Geo-Spatial and Temporal Analysis
 - **Description**: Analyzed time and space-related patterns across movies.
-- **Code Location**: `src/visualization/`
+- **Code Location**: `reports/`
 
 ---
 
@@ -122,7 +119,3 @@ The project includes various visualizations to:
 Feel free to contribute by submitting issues or pull requests. For major changes, please open an issue first to discuss what you would like to change.
 
 ---
-
-### License
-
-This project is licensed under the MIT License. See `LICENSE` for details.
